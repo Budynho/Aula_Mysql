@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula de MySQL: Criação do App Instagram</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #e1306c;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 20px;
+            border-bottom: 2px solid #e1306c;
+            padding-bottom: 10px;
+        }
+        ol {
+            margin: 0;
+            padding: 0;
+            list-style-position: inside;
+        }
+        li {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .exercise {
+            font-weight: bold;
+            color: #e1306c;
+        }
+        .code {
+            background-color: #f9f9f9;
+            border-left: 4px solid #e1306c;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .note {
+            font-style: italic;
+            color: #666;
+        }
+        .btn {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #e1306c;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #b92b6a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aula de MySQL: Criação do App Instagram</h1>
+        
+        <h2>Exercícios</h2>
+        <ol>
+            <li>
+                <span class="exercise">Criação de Tabelas:</span> Crie uma tabela para armazenar informações de usuários (id, nome, email, senha, data de nascimento).
+                <div class="code">
+                    CREATE TABLE usuarios (<br>
+                    &nbsp;&nbsp;id INT AUTO_INCREMENT PRIMARY KEY,<br>
+                    &nbsp;&nbsp;nome VARCHAR(100) NOT NULL,<br>
+                    &nbsp;&nbsp;email VARCHAR(100) UNIQUE NOT NULL,<br>
+                    &nbsp;&nbsp;senha VARCHAR(255) NOT NULL,<br>
+                    &nbsp;&nbsp;data_nascimento DATE<br>
+                    );
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Criação de Tabelas:</span> Crie uma tabela para armazenar postagens (id, id_usuario, imagem_url, legenda, data_postagem).
+                <div class="code">
+                    CREATE TABLE postagens (<br>
+                    &nbsp;&nbsp;id INT AUTO_INCREMENT PRIMARY KEY,<br>
+                    &nbsp;&nbsp;id_usuario INT NOT NULL,<br>
+                    &nbsp;&nbsp;imagem_url VARCHAR(255) NOT NULL,<br>
+                    &nbsp;&nbsp;legenda TEXT,<br>
+                    &nbsp;&nbsp;data_postagem DATETIME DEFAULT CURRENT_TIMESTAMP,<br>
+                    &nbsp;&nbsp;FOREIGN KEY (id_usuario) REFERENCES usuarios(id)<br>
+                    );
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Criação de Tabelas:</span> Crie uma tabela para armazenar comentários (id, id_postagem, id_usuario, comentario, data_comentario).
+                <div class="code">
+                    CREATE TABLE comentarios (<br>
+                    &nbsp;&nbsp;id INT AUTO_INCREMENT PRIMARY KEY,<br>
+                    &nbsp;&nbsp;id_postagem INT NOT NULL,<br>
+                    &nbsp;&nbsp;id_usuario INT NOT NULL,<br>
+                    &nbsp;&nbsp;comentario TEXT NOT NULL,<br>
+                    &nbsp;&nbsp;data_comentario DATETIME DEFAULT CURRENT_TIMESTAMP,<br>
+                    &nbsp;&nbsp;FOREIGN KEY (id_postagem) REFERENCES postagens(id),<br>
+                    &nbsp;&nbsp;FOREIGN KEY (id_usuario) REFERENCES usuarios(id)<br>
+                    );
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Criação de Tabelas:</span> Crie uma tabela para armazenar curtidas (id, id_postagem, id_usuario).
+                <div class="code">
+                    CREATE TABLE curtidas (<br>
+                    &nbsp;&nbsp;id INT AUTO_INCREMENT PRIMARY KEY,<br>
+                    &nbsp;&nbsp;id_postagem INT NOT NULL,<br>
+                    &nbsp;&nbsp;id_usuario INT NOT NULL,<br>
+                    &nbsp;&nbsp;FOREIGN KEY (id_postagem) REFERENCES postagens(id),<br>
+                    &nbsp;&nbsp;FOREIGN KEY (id_usuario) REFERENCES usuarios(id)<br>
+                    );
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Inserção de Dados:</span> Insira alguns dados fictícios nas tabelas de usuários e postagens.
+                <div class="code">
+                    INSERT INTO usuarios (nome, email, senha, data_nascimento)<br>
+                    VALUES ('João Silva', 'joao@example.com', 'senha123', '1990-05-15');<br><br>
+                    INSERT INTO postagens (id_usuario, imagem_url, legenda)<br>
+                    VALUES (1, 'https://example.com/imagem.jpg', 'Minha primeira postagem!');
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Consulta:</span> Liste todos os usuários que têm mais de 100 seguidores.
+                <div class="code">
+                    SELECT u.nome, COUNT(f.id) AS seguidores<br>
+                    FROM usuarios u<br>
+                    LEFT JOIN seguidores f ON u.id = f.id_usuario<br>
+                    GROUP BY u.id<br>
+                    HAVING seguidores > 100;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Consulta:</span> Liste todas as postagens feitas por um usuário específico.
+                <div class="code">
+                    SELECT * FROM postagens<br>
+                    WHERE id_usuario = 1;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Atualização:</span> Atualize a senha de um usuário específico.
+                <div class="code">
+                    UPDATE usuarios<br>
+                    SET senha = 'novaSenha123'<br>
+                    WHERE id = 1;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Deleção:</span> Apague uma postagem específica.
+                <div class="code">
+                    DELETE FROM postagens<br>
+                    WHERE id = 1;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Relatórios:</span> Gere um relatório com o número total de curtidas em uma postagem.
+                <div class="code">
+                    SELECT id_postagem, COUNT(id) AS total_curtidas<br>
+                    FROM curtidas<br>
+                    WHERE id_postagem = 1<br>
+                    GROUP BY id_postagem;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Consulta:</span> Liste os últimos 10 comentários de uma postagem.
+                <div class="code">
+                    SELECT * FROM comentarios<br>
+                    WHERE id_postagem = 1<br>
+                    ORDER BY data_comentario DESC<br>
+                    LIMIT 10;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Consulta:</span> Liste os 5 usuários que mais comentaram em postagens.
+                <div class="code">
+                    SELECT u.nome, COUNT(c.id) AS total_comentarios<br>
+                    FROM usuarios u<br>
+                    JOIN comentarios c ON u.id = c.id_usuario<br>
+                    GROUP BY u.id<br>
+                    ORDER BY total_comentarios DESC<br>
+                    LIMIT 5;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Criação de Índices:</span> Crie um índice na tabela de postagens para melhorar a busca por data.
+                <div class="code">
+                    CREATE INDEX idx_data_postagem ON postagens(data_postagem);
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Joins:</span> Faça uma consulta que mostra todas as postagens com o nome do usuário que as criou.
+                <div class="code">
+                    SELECT p.*, u.nome AS nome_usuario<br>
+                    FROM postagens p<br>
+                    JOIN usuarios u ON p.id_usuario = u.id;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Joins:</span> Faça uma consulta que mostra todas as postagens e os comentários associados.
+                <div class="code">
+                    SELECT p.*, c.comentario<br>
+                    FROM postagens p<br>
+                    LEFT JOIN comentarios c ON p.id = c.id_postagem;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Joins:</span> Faça uma consulta que mostra todas as postagens e o número de curtidas em cada uma.
+                <div class="code">
+                    SELECT p.*, COUNT(c.id) AS total_curtidas<br>
+                    FROM postagens p<br>
+                    LEFT JOIN curtidas c ON p.id = c.id_postagem<br>
+                    GROUP BY p.id;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Subconsultas:</span> Liste os usuários que têm pelo menos uma postagem com mais de 100 curtidas.
+                <div class="code">
+                    SELECT DISTINCT u.nome<br>
+                    FROM usuarios u<br>
+                    JOIN postagens p ON u.id = p.id_usuario<br>
+                    JOIN curtidas c ON p.id = c.id_postagem<br>
+                    GROUP BY u.id<br>
+                    HAVING COUNT(c.id) > 100;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Transações:</span> Crie uma transação para adicionar um novo usuário e uma postagem associada.
+                <div class="code">
+                    START TRANSACTION;<br>
+                    INSERT INTO usuarios (nome, email, senha, data_nascimento)<br>
+                    VALUES ('Maria Oliveira', 'maria@example.com', 'senha456', '1995-07-20');<br>
+                    INSERT INTO postagens (id_usuario, imagem_url, legenda)<br>
+                    VALUES (LAST_INSERT_ID(), 'https://example.com/novaimagem.jpg', 'Nova postagem de Maria');<br>
+                    COMMIT;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Stored Procedures:</span> Crie uma stored procedure para adicionar um novo comentário.
+                <div class="code">
+                    DELIMITER $$<br>
+                    CREATE PROCEDURE adicionar_comentario(<br>
+                    &nbsp;&nbsp;IN p_id_postagem INT,<br>
+                    &nbsp;&nbsp;IN p_id_usuario INT,<br>
+                    &nbsp;&nbsp;IN p_comentario TEXT<br>
+                    )<br>
+                    BEGIN<br>
+                    &nbsp;&nbsp;INSERT INTO comentarios (id_postagem, id_usuario, comentario)<br>
+                    &nbsp;&nbsp;VALUES (p_id_postagem, p_id_usuario, p_comentario);<br>
+                    END $$<br>
+                    DELIMITER ;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Triggers:</span> Crie um trigger que atualize o número de curtidas quando uma nova curtida é inserida.
+                <div class="code">
+                    DELIMITER $$<br>
+                    CREATE TRIGGER atualizar_curtidas<br>
+                    AFTER INSERT ON curtidas<br>
+                    FOR EACH ROW<br>
+                    BEGIN<br>
+                    &nbsp;&nbsp;UPDATE postagens<br>
+                    &nbsp;&nbsp;SET total_curtidas = total_curtidas + 1<br>
+                    &nbsp;&nbsp;WHERE id = NEW.id_postagem;<br>
+                    END $$<br>
+                    DELIMITER ;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Alteração de Tabela:</span> Adicione uma coluna para armazenar a localização nas postagens.
+                <div class="code">
+                    ALTER TABLE postagens<br>
+                    ADD COLUMN localizacao VARCHAR(255);
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Views:</span> Crie uma view que mostre os dados mais recentes das postagens com os usuários.
+                <div class="code">
+                    CREATE VIEW postagens_recentes AS<br>
+                    SELECT p.*, u.nome AS nome_usuario<br>
+                    FROM postagens p<br>
+                    JOIN usuarios u ON p.id_usuario = u.id<br>
+                    WHERE p.data_postagem > NOW() - INTERVAL 30 DAY;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Segurança:</span> Crie uma política de acesso para que apenas administradores possam apagar postagens.
+                <div class="note">Isso geralmente é feito fora do MySQL, no nível da aplicação ou através de um sistema de gerenciamento de permissões.</div>
+            </li>
+            <li>
+                <span class="exercise">Consulta:</span> Liste todas as postagens de um usuário ordenadas por data de postagem.
+                <div class="code">
+                    SELECT * FROM postagens<br>
+                    WHERE id_usuario = 1<br>
+                    ORDER BY data_postagem DESC;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Consulta:</span> Liste todos os usuários e a quantidade de postagens que cada um fez.
+                <div class="code">
+                    SELECT u.nome, COUNT(p.id) AS total_postagens<br>
+                    FROM usuarios u<br>
+                    LEFT JOIN postagens p ON u.id = p.id_usuario<br>
+                    GROUP BY u.id;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Agregação:</span> Calcule o número médio de curtidas por postagem.
+                <div class="code">
+                    SELECT AVG(total_curtidas) AS media_curtidas<br>
+                    FROM (SELECT COUNT(id) AS total_curtidas<br>
+                          FROM curtidas<br>
+                          GROUP BY id_postagem) AS subquery;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Agregação:</span> Calcule o total de comentários feitos por cada usuário.
+                <div class="code">
+                    SELECT u.nome, COUNT(c.id) AS total_comentarios<br>
+                    FROM usuarios u<br>
+                    LEFT JOIN comentarios c ON u.id = c.id_usuario<br>
+                    GROUP BY u.id;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Agrupamento:</span> Agrupe postagens por data e conte o número de postagens em cada dia.
+                <div class="code">
+                    SELECT DATE(data_postagem) AS data_postagem, COUNT(id) AS total_postagens<br>
+                    FROM postagens<br>
+                    GROUP BY DATE(data_postagem);
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Ordenação:</span> Ordene os usuários por número de seguidores em ordem decrescente.
+                <div class="code">
+                    SELECT u.nome, COUNT(s.id) AS seguidores<br>
+                    FROM usuarios u<br>
+                    LEFT JOIN seguidores s ON u.id = s.id_usuario<br>
+                    GROUP BY u.id<br>
+                    ORDER BY seguidores DESC;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Inserção em Massa:</span> Insira múltiplos usuários em uma única consulta.
+                <div class="code">
+                    INSERT INTO usuarios (nome, email, senha, data_nascimento)<br>
+                    VALUES<br>
+                    ('Ana Costa', 'ana@example.com', 'senha789', '1992-12-01'),<br>
+                    ('Carlos Lima', 'carlos@example.com', 'senha012', '1988-03-14');
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Consulta:</span> Liste todas as postagens feitas em um determinado intervalo de datas.
+                <div class="code">
+                    SELECT * FROM postagens<br>
+                    WHERE data_postagem BETWEEN '2024-01-01' AND '2024-12-31';
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Atualização:</span> Atualize a legenda de uma postagem específica.
+                <div class="code">
+                    UPDATE postagens<br>
+                    SET legenda = 'Legenda atualizada'<br>
+                    WHERE id = 1;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Deleção:</span> Apague todos os comentários associados a uma postagem específica.
+                <div class="code">
+                    DELETE FROM comentarios<br>
+                    WHERE id_postagem = 1;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Consulta:</span> Liste todos os seguidores de um usuário específico.
+                <div class="code">
+                    SELECT s.id_usuario, u.nome<br>
+                    FROM seguidores s<br>
+                    JOIN usuarios u ON s.id_seguidor = u.id<br>
+                    WHERE s.id_usuario = 1;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Relatórios:</span> Gere um relatório mostrando usuários com menos de 10 postagens.
+                <div class="code">
+                    SELECT u.nome, COUNT(p.id) AS total_postagens<br>
+                    FROM usuarios u<br>
+                    LEFT JOIN postagens p ON u.id = p.id_usuario<br>
+                    GROUP BY u.id<br>
+                    HAVING total_postagens < 10;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Consulta:</span> Liste os 10 posts mais populares com base no número de curtidas.
+                <div class="code">
+                    SELECT p.id, p.imagem_url, COUNT(c.id) AS total_curtidas<br>
+                    FROM postagens p<br>
+                    LEFT JOIN curtidas c ON p.id = c.id_postagem<br>
+                    GROUP BY p.id<br>
+                    ORDER BY total_curtidas DESC<br>
+                    LIMIT 10;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Transações:</span> Crie uma transação para adicionar um novo post e um novo comentário.
+                <div class="code">
+                    START TRANSACTION;<br>
+                    INSERT INTO postagens (id_usuario, imagem_url, legenda)<br>
+                    VALUES (1, 'https://example.com/novaimagem2.jpg', 'Outra postagem');<br>
+                    INSERT INTO comentarios (id_postagem, id_usuario, comentario)<br>
+                    VALUES (LAST_INSERT_ID(), 1, 'Ótima postagem!');<br>
+                    COMMIT;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Stored Procedures:</span> Crie uma stored procedure para listar postagens de um usuário.
+                <div class="code">
+                    DELIMITER $$<br>
+                    CREATE PROCEDURE listar_postagens_usuario(<br>
+                    &nbsp;&nbsp;IN p_id_usuario INT<br>
+                    )<br>
+                    BEGIN<br>
+                    &nbsp;&nbsp;SELECT * FROM postagens<br>
+                    &nbsp;&nbsp;WHERE id_usuario = p_id_usuario;<br>
+                    END $$<br>
+                    DELIMITER ;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Triggers:</span> Crie um trigger para atualizar a data de modificação em postagens.
+                <div class="code">
+                    DELIMITER $$<br>
+                    CREATE TRIGGER atualizar_data_modificacao<br>
+                    BEFORE UPDATE ON postagens<br>
+                    FOR EACH ROW<br>
+                    BEGIN<br>
+                    &nbsp;&nbsp;SET NEW.data_postagem = NOW();<br>
+                    END $$<br>
+                    DELIMITER ;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Views:</span> Crie uma view que mostre os 5 usuários mais ativos com base no número de postagens.
+                <div class="code">
+                    CREATE VIEW usuarios_ativos AS<br>
+                    SELECT u.nome, COUNT(p.id) AS total_postagens<br>
+                    FROM usuarios u<br>
+                    LEFT JOIN postagens p ON u.id = p.id_usuario<br>
+                    GROUP BY u.id<br>
+                    ORDER BY total_postagens DESC<br>
+                    LIMIT 5;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Criação de Índices:</span> Crie um índice na tabela de comentários para melhorar a busca por id_postagem.
+                <div class="code">
+                    CREATE INDEX idx_id_postagem ON comentarios(id_postagem);
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Agrupamento:</span> Agrupe postagens por localização e conte o número de postagens em cada localização.
+                <div class="code">
+                    SELECT localizacao, COUNT(id) AS total_postagens<br>
+                    FROM postagens<br>
+                    GROUP BY localizacao;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Consulta:</span> Liste todas as postagens de um usuário específico e a quantidade de comentários em cada uma.
+                <div class="code">
+                    SELECT p.id, p.imagem_url, COUNT(c.id) AS total_comentarios<br>
+                    FROM postagens p<br>
+                    LEFT JOIN comentarios c ON p.id = c.id_postagem<br>
+                    WHERE p.id_usuario = 1<br>
+                    GROUP BY p.id;
+                </div>
+            </li>
+            <li>
+                <span class="exercise">Deleção:</span> Apague todos os dados relacionados a um usuário específico.
+                <div class="code">
+                    START TRANSACTION;<br>
+                    DELETE FROM comentarios WHERE id_usuario = 1;<br>
+                    DELETE FROM curtidas WHERE id_usuario = 1;<br>
+                    DELETE FROM postagens WHERE id_usuario = 1;<br>
+                    DELETE FROM usuarios WHERE id = 1;<br>
+                    COMMIT;
+                </div>
+            </li>
+        </ol>
+    </div>
+</body>
+</html>
